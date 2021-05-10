@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strings"
 
 	"github.com/eddie023/declutter/cmd/declutter"
 	"github.com/eddie023/declutter/internal"
@@ -13,6 +12,9 @@ import (
 const CURRENT_DIR = "."
 
 func main() {
+	var c internal.Conf
+	fmt.Println("the config is", c.GetConf())
+
 	cmd := ""
 	if len(os.Args) > 1 {
 		cmd = os.Args[1]
@@ -21,37 +23,7 @@ func main() {
 		cmd = CURRENT_DIR
 	}
 
-	dir := declutter.ReadDir(cmd)
+	filteredFiles := declutter.MoveFiles(cmd)
 
-	// Function to filter strings with "." at the beginning. i.e hidden files
-	ss := func(fName string) bool { return !strings.HasPrefix(string(fName), ".") }
-
-	// Filter hidden files.
-	filteredDir := internal.Filter(dir, ss)
-
-	for _, file := range filteredDir {
-		fName := file.Name()
-		fType := fName[strings.LastIndex(fName, ".")+1:]
-
-		// Leave files with no extension as it is.
-		if len(fType) == len(fName) {
-			fmt.Println(fName, " has no extension")
-			continue
-		}
-
-		// Move files to folders specified in config file
-		// fmt.Println(fName, "and", fType)
-	}
-
-	fmt.Println(os.Stat("/home/rattlehead/Desktop"))
-
-	log.Println("There are", len(filteredDir), "items in this dir")
+	log.Println("There are", filteredFiles, "items in this dir")
 }
-
-// func getFileContentType(file os.FileInfo) (string, error) {
-
-// 	buffer := make([]byte, 512)
-
-// 	_, err := file.
-
-// }
