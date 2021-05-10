@@ -1,0 +1,7 @@
+---
+output:
+  documents:
+    - pdf
+  pictures:
+    - jpg
+    - png
