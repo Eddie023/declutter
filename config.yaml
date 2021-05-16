@@ -2,7 +2,27 @@
 output:
   documents:
     - pdf
+    - docx
+    - epub
+    - tiff
+    - doc
   pictures:
     - jpg
     - png
     - jpeg
+    - eps
+    - JPG
+    - svg
+    - PNG
+  excel:
+    - xlsx
+    - csv
+  video:
+    - mp4
+  zip:
+    - zip
+  temp:
+    - ics
+    - torrent
+  slides:
+    - pptx
