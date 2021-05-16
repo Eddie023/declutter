@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/eddie023/declutter/cmd/declutter"
+	"github.com/eddie023/declutter/internal"
 )
 
 const CURRENT_DIR = "."
@@ -18,7 +19,9 @@ func main() {
 		cmd = CURRENT_DIR
 	}
 
-	filteredFiles := declutter.MoveFiles(cmd)
+	dirPath := internal.GetDirPath(cmd)
+	// TODO: Don't return ff, but return summary
+	filteredFiles := declutter.MoveFiles(dirPath)
 
 	log.Println("There are", filteredFiles, "items in this dir")
 }

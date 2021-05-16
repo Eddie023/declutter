@@ -13,22 +13,20 @@ import (
 
 type outputFoldersMap map[string][]string
 
-func MoveFiles(cmd string) int {
-	var path string
+func MoveFiles(path string) int {
 	var oldPath string
 	var newPath string
-	outputFolders := createOutputFolders()
 
-	dir := ReadDir(cmd)
+	files := readFiles(path)
 	// Function to filter strings with "." at the beginning. i.e hidden files
 	ss := func(fName string) bool { return !strings.HasPrefix(string(fName), ".") }
 
 	// Filter hidden files.
-	filteredDir := internal.Filter(dir, ss)
+	filteredFiles := internal.FilterByName(files, ss)
+	outputFolders := createOutputFolders(path, filteredFiles)
 
-	for _, file := range filteredDir {
+	for _, file := range filteredFiles {
 		fName := file.Name()
-		// fName = strings.ReplaceAll(fName, " ", "\\ ")
 		fType := fName[strings.LastIndex(fName, ".")+1:]
 
 		// Leave files with no extension as it is.
@@ -37,13 +35,7 @@ func MoveFiles(cmd string) int {
 			continue
 		}
 
-		if cmd == "." {
-			path = getAbsPath()
-		} else {
-			path = cmd
-		}
-
-		oldPath = path + "/" + fName
+		oldPath = filepath.Join(path, fName)
 
 		// Move files to folders specified in config file
 		if shouldMoveFile(fType, outputFolders) {
@@ -52,19 +44,19 @@ func MoveFiles(cmd string) int {
 				panic("Output type doesn't exist")
 			}
 
-			newPath = path + "/" + outputFolderFilePath + "/" + fName
+			newPath = filepath.Join(path, outputFolderFilePath, fName)
 
-			err := MoveFile(oldPath, newPath)
+			err := moveFile(oldPath, newPath)
 			if err != nil {
 				log.Fatal("Error when moving files", err)
 			}
 		}
 	}
 
-	return len(filteredDir)
+	return len(filteredFiles)
 }
 
-func ReadDir(path string) []os.FileInfo {
+func readFiles(path string) []os.FileInfo {
 	dir, err := ioutil.ReadDir(path)
 	if err != nil {
 		log.Fatal(err)
@@ -77,20 +69,47 @@ func ReadDir(path string) []os.FileInfo {
 		return []os.FileInfo{}
 	}
 
-	return dir
+	// Filter nested directories.
+	ss := func(f os.FileInfo) bool { return !f.IsDir() }
+
+	files := internal.FilterByFileInfo(dir, ss)
+
+	return files
 }
 
-func createOutputFolders() outputFoldersMap {
+// Check if output folders are present, if not then create the folders.
+// TODO: Right now all the folders are created even it it's not required.
+func createOutputFolders(p string, files []os.FileInfo) outputFoldersMap {
 	var c internal.Conf
 	config := c.GetConf()
-	outputFolder := config.Output
+	outputFolders := config.Output
 
-	for folder := range outputFolder {
-		if _, err := os.Stat(folder); os.IsNotExist(err) {
+	fmt.Println("the outputFolders is", outputFolders)
+
+	// Required output folders
+	reqOutFolders := []string{}
+
+	for _, f := range files {
+		fName := f.Name()
+		fType := fName[strings.LastIndex(fName, ".")+1:]
+
+		rq, ok := getRequiredFolderName(fType, outputFolders)
+		fmt.Println("the rq is", rq, ok)
+		if ok {
+			reqOutFolders = append(reqOutFolders, rq)
+		}
+	}
+
+	fmt.Println("the requiredOutFOlders is", reqOutFolders)
+
+	for _, folder := range reqOutFolders {
+		pathToFolder := filepath.Join(p, folder)
+		if _, err := os.Stat(pathToFolder); os.IsNotExist(err) {
 			fmt.Printf("Folder name: %s doesn't exit\n", folder)
 
 			// FIX ME: os.Mkdir is case insensitive. However, we should know the actual case of key dir.
-			err := os.Mkdir(folder, 0755)
+			// TODO: Folder should be created in a correct path
+			err := os.Mkdir(filepath.Join(p, folder), 0755)
 			if err != nil {
 				log.Fatal("Error when creating new folder\n", err)
 			}
@@ -100,7 +119,7 @@ func createOutputFolders() outputFoldersMap {
 		}
 	}
 
-	return outputFolder
+	return outputFolders
 }
 
 func shouldMoveFile(t string, o outputFoldersMap) bool {
@@ -114,7 +133,21 @@ func shouldMoveFile(t string, o outputFoldersMap) bool {
 	return false
 }
 
-func MoveFile(oldpath string, newpath string) error {
+func getRequiredFolderName(t string, o outputFoldersMap) (rq string, ok bool) {
+	for key, v := range o {
+		for _, fileType := range v {
+			if fileType == t {
+				rq = key
+				ok = true
+			}
+			continue
+		}
+	}
+
+	return "", false
+}
+
+func moveFile(oldpath string, newpath string) error {
 	return os.Rename(oldpath, newpath)
 }
 
@@ -136,14 +169,4 @@ func contains(s []string, e string) bool {
 		}
 	}
 	return false
-}
-
-func getAbsPath() string {
-	ex, err := os.Executable()
-	if err != nil {
-		log.Fatal(err)
-	}
-	path := filepath.Dir(ex)
-
-	return path
 }
