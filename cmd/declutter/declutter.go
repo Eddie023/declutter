@@ -84,31 +84,25 @@ func createOutputFolders(p string, files []os.FileInfo) outputFoldersMap {
 	config := c.GetConf()
 	outputFolders := config.Output
 
-	fmt.Println("the outputFolders is", outputFolders)
-
 	// Required output folders
-	reqOutFolders := []string{}
+	reqOutFolderNames := []string{}
 
 	for _, f := range files {
 		fName := f.Name()
 		fType := fName[strings.LastIndex(fName, ".")+1:]
 
 		rq, ok := getRequiredFolderName(fType, outputFolders)
-		fmt.Println("the rq is", rq, ok)
 		if ok {
-			reqOutFolders = append(reqOutFolders, rq)
+			reqOutFolderNames = append(reqOutFolderNames, rq)
 		}
 	}
 
-	fmt.Println("the requiredOutFOlders is", reqOutFolders)
-
-	for _, folder := range reqOutFolders {
+	for _, folder := range reqOutFolderNames {
 		pathToFolder := filepath.Join(p, folder)
 		if _, err := os.Stat(pathToFolder); os.IsNotExist(err) {
 			fmt.Printf("Folder name: %s doesn't exit\n", folder)
 
 			// FIX ME: os.Mkdir is case insensitive. However, we should know the actual case of key dir.
-			// TODO: Folder should be created in a correct path
 			err := os.Mkdir(filepath.Join(p, folder), 0755)
 			if err != nil {
 				log.Fatal("Error when creating new folder\n", err)
@@ -139,6 +133,8 @@ func getRequiredFolderName(t string, o outputFoldersMap) (rq string, ok bool) {
 			if fileType == t {
 				rq = key
 				ok = true
+
+				return rq, ok
 			}
 			continue
 		}
