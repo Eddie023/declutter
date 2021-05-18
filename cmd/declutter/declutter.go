@@ -13,7 +13,7 @@ import (
 
 type outputFoldersMap map[string][]string
 
-func MoveFiles(path string) int {
+func MoveFiles(path string) {
 	var oldPath string
 	var newPath string
 
@@ -52,8 +52,6 @@ func MoveFiles(path string) int {
 			}
 		}
 	}
-
-	return len(filteredFiles)
 }
 
 func readFiles(path string) []os.FileInfo {
@@ -78,10 +76,10 @@ func readFiles(path string) []os.FileInfo {
 }
 
 // Check if output folders are present, if not then create the folders.
-// TODO: Right now all the folders are created even it it's not required.
 func createOutputFolders(p string, files []os.FileInfo) outputFoldersMap {
 	var c internal.Conf
 	config := c.GetConf()
+
 	outputFolders := config.Output
 
 	// Required output folders

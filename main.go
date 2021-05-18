@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"os"
 
 	"github.com/eddie023/declutter/cmd/declutter"
@@ -20,8 +19,5 @@ func main() {
 	}
 
 	dirPath := internal.GetDirPath(cmd)
-	// TODO: Don't return ff, but return summary
-	filteredFiles := declutter.MoveFiles(dirPath)
-
-	log.Println("There are", filteredFiles, "items in this dir")
+	declutter.MoveFiles(dirPath)
 }
