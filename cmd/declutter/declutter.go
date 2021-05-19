@@ -1,14 +1,13 @@
 package declutter
 
 import (
-	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/eddie023/declutter/internal"
+	log "github.com/sirupsen/logrus"
 )
 
 type outputFoldersMap map[string][]string
@@ -18,11 +17,9 @@ func MoveFiles(path string) {
 	var newPath string
 
 	files := readFiles(path)
-	// Function to filter strings with "." at the beginning. i.e hidden files
-	ss := func(fName string) bool { return !strings.HasPrefix(string(fName), ".") }
+	filteredFiles := filterHiddenFiles(files)
+	log.Debug("The list of files: ", showFName(filteredFiles))
 
-	// Filter hidden files.
-	filteredFiles := internal.FilterByName(files, ss)
 	outputFolders := createOutputFolders(path, filteredFiles)
 
 	for _, file := range filteredFiles {
@@ -31,7 +28,7 @@ func MoveFiles(path string) {
 
 		// Leave files with no extension as it is.
 		if len(fType) == len(fName) {
-			fmt.Println(fName, " has no extension")
+			log.Debug(fName, " has no extension")
 			continue
 		}
 
@@ -54,15 +51,16 @@ func MoveFiles(path string) {
 	}
 }
 
+// Read files present in the provided path.
+// Filter the list to exclude dirs present in the given path.
 func readFiles(path string) []os.FileInfo {
 	dir, err := ioutil.ReadDir(path)
 	if err != nil {
 		log.Fatal(err)
-		os.Exit(1)
 	}
 
 	if len(dir) == 0 {
-		log.Print("Empty Directory\n")
+		log.Println("Empty Directory")
 
 		return []os.FileInfo{}
 	}
@@ -75,15 +73,20 @@ func readFiles(path string) []os.FileInfo {
 	return files
 }
 
+func filterHiddenFiles(f []os.FileInfo) []os.FileInfo {
+	// Function to filter strings with "." at the beginning. i.e hidden files
+	ss := func(fName string) bool { return !strings.HasPrefix(string(fName), ".") }
+
+	return internal.FilterByName(f, ss)
+}
+
 // Check if output folders are present, if not then create the folders.
+// TODO: Refactor this function.
 func createOutputFolders(p string, files []os.FileInfo) outputFoldersMap {
+	reqOutFolderNames := []string{}
 	var c internal.Conf
 	config := c.GetConf()
-
 	outputFolders := config.Output
-
-	// Required output folders
-	reqOutFolderNames := []string{}
 
 	for _, f := range files {
 		fName := f.Name()
@@ -91,23 +94,33 @@ func createOutputFolders(p string, files []os.FileInfo) outputFoldersMap {
 
 		rq, ok := getRequiredFolderName(fType, outputFolders)
 		if ok {
-			reqOutFolderNames = append(reqOutFolderNames, rq)
+			if len(reqOutFolderNames) < 1 {
+				reqOutFolderNames = append(reqOutFolderNames, rq)
+			} else {
+				for _, elm := range reqOutFolderNames {
+					if elm == rq {
+						continue
+					} else {
+						reqOutFolderNames = append(reqOutFolderNames, rq)
+					}
+				}
+			}
 		}
 	}
 
 	for _, folder := range reqOutFolderNames {
 		pathToFolder := filepath.Join(p, folder)
+
+		// Check if required folder exists or not
+		// Create if doesn't exist.
 		if _, err := os.Stat(pathToFolder); os.IsNotExist(err) {
-			fmt.Printf("Folder name: %s doesn't exit\n", folder)
+			log.Info("Creating folder: ", folder)
 
 			// FIX ME: os.Mkdir is case insensitive. However, we should know the actual case of key dir.
 			err := os.Mkdir(filepath.Join(p, folder), 0755)
 			if err != nil {
 				log.Fatal("Error when creating new folder\n", err)
 			}
-		} else {
-			// If folder exist
-			fmt.Printf("Folder name: %s already exists\n", folder)
 		}
 	}
 
@@ -163,4 +176,12 @@ func contains(s []string, e string) bool {
 		}
 	}
 	return false
+}
+
+func showFName(f []os.FileInfo) (fName []string) {
+	for _, file := range f {
+		fName = append(fName, file.Name())
+	}
+
+	return
 }
