@@ -7,7 +7,7 @@ Declutter looks into all the files(excluding hidden files) provided in a given d
 on config.yaml file, moves those files into correct folders.
 
 ## Configure output folder 
-Change output foldername and add different type based on your personal need in config.yaml file. 
+Change output folder name and add different type based on your personal need in config.yaml file. 
 
 For example:
 ```
