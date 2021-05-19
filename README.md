@@ -29,6 +29,7 @@ $ go build
 ```
 
 Run the declutter executable and pass the dir path you want to organize.
+If no path is provided then the current directory is assumed as the folder that needs cleaning.
 
 ```bash
 $ ./declutter ~/Desktop
