@@ -1,26 +1,52 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"os"
 
-	"github.com/eddie023/declutter/internal"
-	declutter "github.com/eddie023/declutter/pkg"
 	log "github.com/sirupsen/logrus"
 )
 
 const CURRENT_DIR = "."
 
+const USAGE = `Usage: declutter [options...] <filepath>
+
+Options: 
+	-c Path to override config file. 
+	-v Show debug logs.
+	-r Show what would the output look like without moving files.
+`
+
 func main() {
-	log.SetLevel(log.DebugLevel)
-	cmd := ""
-	if len(os.Args) > 1 {
-		cmd = os.Args[1]
-	} else {
-		// If no cmd is passed, then use current path as dir.
-		log.Debug("No cmd arg provided. Using current dir as arg")
-		cmd = CURRENT_DIR
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, USAGE)
+
 	}
 
-	dirPath := internal.GetDirPath(cmd)
-	declutter.Tidy(dirPath)
+	log.SetLevel(log.DebugLevel)
+
+	flag.Parse()
+	// If no filepath is provided.
+	if flag.NArg() < 1 {
+		usageAndExit("")
+	}
+
+	path := flag.Args()[0]
+
+	fmt.Println(path)
+
+	// dirPath := internal.GetDirPath(cmd)
+	// declutter.Tidy(dirPath)
+}
+
+func usageAndExit(msg string) {
+	if msg != "" {
+		fmt.Fprintf(os.Stderr, msg)
+		fmt.Fprintf(os.Stderr, "\n\n")
+	}
+
+	flag.Usage()
+	fmt.Fprintf(os.Stderr, "\n")
+	os.Exit(1)
 }
