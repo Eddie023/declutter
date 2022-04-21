@@ -1,3 +1,5 @@
+// Command declutter is a utility that organizes provided
+// directory by moving files to relevant folder.
 package declutter
 
 import (
@@ -6,6 +8,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Get the list of files in provided path
+// check the file type and move them to correct folder based on config.
 func Tidy(path string) {
 	if err := run(); err != nil {
 		log.Error("Failed with err", err)
