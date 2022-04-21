@@ -3,31 +3,26 @@
 package declutter
 
 import (
-	"fmt"
+	"os"
 
+	"github.com/eddie023/declutter/internal"
 	log "github.com/sirupsen/logrus"
 )
 
 // Get the list of files in provided path
 // check the file type and move them to correct folder based on config.
 func Tidy(path string) {
-	if err := run(); err != nil {
+	if err := run(path); err != nil {
 		log.Error("Failed with err", err)
 	}
 }
 
-func run() error {
-
-	// =========================
-	// Configuration
-
-	cfg := struct {
-		Foo string
-	}{
-		Foo: "apple",
+func run(p string) error {
+	if ok := internal.IsValidPath(p); !ok {
+		os.Exit(-1)
 	}
 
-	fmt.Println("the cfg", cfg)
+	internal.MoveFiles(p)
 
 	return nil
 }

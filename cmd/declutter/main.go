@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/eddie023/declutter/pkg/declutter"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -34,10 +35,7 @@ func main() {
 
 	path := flag.Args()[0]
 
-	fmt.Println(path)
-
-	// dirPath := internal.GetDirPath(cmd)
-	// declutter.Tidy(dirPath)
+	declutter.Tidy(path)
 }
 
 func usageAndExit(msg string) {
