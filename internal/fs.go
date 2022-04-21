@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -183,4 +184,13 @@ func showFName(f []os.FileInfo) (fName []string) {
 	}
 
 	return
+}
+
+func IsValidPath(fp string) bool {
+	if _, err := os.Stat(fp); err != nil {
+		fmt.Println(err)
+		return false
+	}
+
+	return true
 }
