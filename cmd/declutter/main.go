@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
-	"github.com/eddie023/declutter/cmd/declutter"
 	"github.com/eddie023/declutter/internal"
+	declutter "github.com/eddie023/declutter/pkg"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -22,5 +22,5 @@ func main() {
 	}
 
 	dirPath := internal.GetDirPath(cmd)
-	declutter.MoveFiles(dirPath)
+	declutter.Tidy(dirPath)
 }

@@ -1,4 +1,4 @@
-package declutter
+package internal
 
 import (
 	"io/ioutil"
@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/eddie023/declutter/internal"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -18,7 +17,7 @@ func MoveFiles(path string) {
 
 	files := readFiles(path)
 	filteredFiles := filterHiddenFiles(files)
-	log.Debug("The list of files: ", showFName(filteredFiles))
+	// log.Debug("The list of files: ", showFName(filteredFiles))
 
 	outputFolders := createOutputFolders(path, filteredFiles)
 
@@ -68,7 +67,7 @@ func readFiles(path string) []os.FileInfo {
 	// Filter nested directories.
 	ss := func(f os.FileInfo) bool { return !f.IsDir() }
 
-	files := internal.FilterByFileInfo(dir, ss)
+	files := FilterByFileInfo(dir, ss)
 
 	return files
 }
@@ -77,14 +76,14 @@ func filterHiddenFiles(f []os.FileInfo) []os.FileInfo {
 	// Function to filter strings with "." at the beginning. i.e hidden files
 	ss := func(fName string) bool { return !strings.HasPrefix(string(fName), ".") }
 
-	return internal.FilterByName(f, ss)
+	return FilterByName(f, ss)
 }
 
 // Check if output folders are present, if not then create the folders.
 // TODO: Refactor this function.
 func createOutputFolders(p string, files []os.FileInfo) outputFoldersMap {
 	reqOutFolderNames := []string{}
-	var c internal.Conf
+	var c Conf
 	config := c.GetConf()
 	outputFolders := config.Output
 
