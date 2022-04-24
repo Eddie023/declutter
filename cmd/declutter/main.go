@@ -9,15 +9,23 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const CURRENT_DIR = "."
-
 const USAGE = `Usage: declutter [options...] <filepath>
 
 Options: 
 	-c Path to override config file. 
-	-v Show debug logs.
+	-v Show verbose logs.
 	-r Show what would the output look like without moving files.
 `
+
+const CURRENT_DIR = "."
+
+var (
+	// main operation mode
+	isDebugMode    = flag.Bool("v", false, "show verbose logs")
+	isReadOnlyMode = flag.Bool("r", false, "show output without moving files")
+)
+
+// TODO: Each file can be moved concurrently.
 
 func main() {
 	flag.Usage = func() {
@@ -35,7 +43,16 @@ func main() {
 
 	path := flag.Args()[0]
 
-	declutter.Tidy(path)
+	declutter.Tidy(path, getFlags())
+}
+
+func getFlags() declutter.Flags {
+	flags := make(map[string]bool)
+
+	flags["isDebugMode"] = *isDebugMode
+	flags["isReadOnlyMode"] = *isReadOnlyMode
+
+	return flags
 }
 
 func usageAndExit(msg string) {

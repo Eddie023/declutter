@@ -2,7 +2,6 @@ package internal
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -12,77 +11,21 @@ import (
 
 type outputFoldersMap map[string][]string
 
-func MoveFiles(path string) {
-	var oldPath string
-	var newPath string
+type File os.DirEntry
 
-	files := readFiles(path)
-	filteredFiles := filterHiddenFiles(files)
-	// log.Debug("The list of files: ", showFName(filteredFiles))
+func MoveFile(p string, f File, fType string) {
+	// var oldPath string
+	// var newPath string
 
-	outputFolders := createOutputFolders(path, filteredFiles)
-
-	for _, file := range filteredFiles {
-		fName := file.Name()
-		fType := fName[strings.LastIndex(fName, ".")+1:]
-
-		// Leave files with no extension as it is.
-		if len(fType) == len(fName) {
-			log.Debug(fName, " has no extension")
-			continue
-		}
-
-		oldPath = filepath.Join(path, fName)
-
-		// Move files to folders specified in config file
-		if shouldMoveFile(fType, outputFolders) {
-			outputFolderFilePath, ok := mapkey(outputFolders, fType)
-			if !ok {
-				panic("Output type doesn't exist")
-			}
-
-			newPath = filepath.Join(path, outputFolderFilePath, fName)
-
-			err := moveFile(oldPath, newPath)
-			if err != nil {
-				log.Fatal("Error when moving files", err)
-			}
-		}
-	}
+	// outputFolders := createOutputFolders(path, filteredFiles)
 }
 
 // Read files present in the provided path.
 // Filter the list to exclude dirs present in the given path.
-func readFiles(path string) []os.FileInfo {
-	dir, err := ioutil.ReadDir(path)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if len(dir) == 0 {
-		log.Println("Empty Directory")
-
-		return []os.FileInfo{}
-	}
-
-	// Filter nested directories.
-	ss := func(f os.FileInfo) bool { return !f.IsDir() }
-
-	files := FilterByFileInfo(dir, ss)
-
-	return files
-}
-
-func filterHiddenFiles(f []os.FileInfo) []os.FileInfo {
-	// Function to filter strings with "." at the beginning. i.e hidden files
-	ss := func(fName string) bool { return !strings.HasPrefix(string(fName), ".") }
-
-	return FilterByName(f, ss)
-}
 
 // Check if output folders are present, if not then create the folders.
 // TODO: Refactor this function.
-func createOutputFolders(p string, files []os.FileInfo) outputFoldersMap {
+func createOutputFolders(p string, files []os.DirEntry) outputFoldersMap {
 	reqOutFolderNames := []string{}
 	var c Conf
 	config := c.GetConf()
@@ -154,7 +97,7 @@ func getRequiredFolderName(t string, o outputFoldersMap) (rq string, ok bool) {
 	return "", false
 }
 
-func moveFile(oldpath string, newpath string) error {
+func moveFilepath(oldpath string, newpath string) error {
 	return os.Rename(oldpath, newpath)
 }
 
