@@ -1,24 +1,11 @@
 # declutter
 
+![logo](docs/resources/logo.png)
+
 Declutter is a tool to organize your files in correct folder structure. 
-Remove all the clutter from your desktop or any folders from your terminal!
+Remove all the clutter from your specified directory all this from your terminal!
 
-Declutter looks into all the files(excluding hidden files) provided in a given directory. Then based on extension type and configuration provided 
-on config.yaml file, moves those files into correct folders.
-
-## Configure output folder 
-Change output folder name and add different type based on your personal need in config.yaml file. 
-
-For example:
-```
-output:
-  trash: 
-    - txt
-  photos:
-    - png
-    - jpg
-
-```
+Declutter looks into all the files(excluding hidden files) provided in a given directory. Then based on extension type moves those files into relevant folders.
 
 ## Usage
 
