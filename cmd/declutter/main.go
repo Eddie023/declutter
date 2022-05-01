@@ -21,8 +21,8 @@ const CURRENT_DIR = "."
 
 var (
 	// main operation mode
-	isDebugMode    = flag.Bool("v", false, "show verbose logs")
-	isReadOnlyMode = flag.Bool("r", false, "show output without moving files")
+	isDebugMode = flag.Bool("v", false, "show verbose logs")
+	// isReadOnlyMode = flag.Bool("r", false, "show output without moving files")
 )
 
 // TODO: Each file can be moved concurrently.
@@ -50,7 +50,7 @@ func getFlags() declutter.Flags {
 	flags := make(map[string]bool)
 
 	flags["isDebugMode"] = *isDebugMode
-	flags["isReadOnlyMode"] = *isReadOnlyMode
+	// flags["isReadOnlyMode"] = *isReadOnlyMode
 
 	return flags
 }
