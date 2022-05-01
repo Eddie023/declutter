@@ -3,9 +3,8 @@
 package declutter
 
 import (
-	"fmt"
 	"os"
-	"strings"
+	"path/filepath"
 
 	"github.com/eddie023/declutter/internal"
 	"github.com/gabriel-vasile/mimetype"
@@ -45,14 +44,8 @@ func run(c *Config) error {
 			log.Warn("Skipping file : %v . Cant figure out the mime type with error: %v", file.Name(), err)
 		}
 
-		// output folder based on mtype
-
-		fmt.Println("the files is", file.Name(), mtype)
-
 		moveFile(c.path, file.Name(), mtype.String())
 	}
-
-	// internal.MoveFiles(p)
 
 	return nil
 }
@@ -81,9 +74,25 @@ func readFiles(path string) []os.DirEntry {
 	return files
 }
 
+// Move file based on provided path, file type, and file name.
 func moveFile(path string, fileName string, mimeType string) {
 
-	outputFolderName := mimeType[:strings.IndexByte(mimeType, '/')]
+	outputFolderName := internal.GetFolderName(mimeType)
 
-	fmt.Println("ofn", outputFolderName)
+	// check if we already have folder with this name in given path.
+	// create if doesn't exist.
+	if _, err := os.Stat(path + "/" + outputFolderName); os.IsNotExist(err) {
+		log.Info("Creating folder: ", outputFolderName)
+
+		// FIX ME: os.Mkdir is case insensitive. However, we should know the actual case of key dir.
+		err := os.Mkdir(filepath.Join(path, outputFolderName), 0755)
+		if err != nil {
+			log.Fatal("Error when creating new folder\n", err)
+		}
+	}
+
+	previousPath := path + "/" + fileName
+	newPath := path + "/" + outputFolderName + "/" + fileName
+
+	internal.Move(previousPath, newPath)
 }
