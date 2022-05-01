@@ -7,9 +7,17 @@ Remove all the clutter from your specified directory all this from your terminal
 
 Declutter looks into all the files(excluding hidden files) provided in a given directory. Then based on extension type moves those files into relevant folders.
 
-## Usage
+## Usage:
 
-Build the binary. 
+```
+Usage: declutter [options...] <filepath>
+
+Options: 
+        -v Show verbose logs. (WIP)
+        -r Show what would the output look like without moving files. (WIP)
+```
+
+## Build:
 
 ```bash
 $ make build

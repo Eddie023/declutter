@@ -12,9 +12,8 @@ import (
 const USAGE = `Usage: declutter [options...] <filepath>
 
 Options: 
-	-c Path to override config file. 
-	-v Show verbose logs.
-	-r Show what would the output look like without moving files.
+	-v Show verbose logs. (WIP)
+	-r Show what would the output look like without moving files. (WIP)
 `
 
 const CURRENT_DIR = "."
