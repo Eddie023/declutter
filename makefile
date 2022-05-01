@@ -8,3 +8,6 @@ reset-testFiles:
 	find testFiles -maxdepth 2 -type f -exec mv {} ./testFiles \;
 
 reset-run: reset-testFiles run 
+
+build:
+	go build -o declutter cmd/declutter/main.go 

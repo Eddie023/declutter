@@ -9,14 +9,14 @@ Declutter looks into all the files(excluding hidden files) provided in a given d
 
 ## Usage
 
-Run go build 
+Build the binary. 
 
 ```bash
-$ go build 
+$ make build
 ```
 
 Run the declutter executable and pass the dir path you want to organize.
-If no path is provided then the current directory is assumed as the folder that needs cleaning.
+
 
 ```bash
 $ ./declutter ~/Desktop
