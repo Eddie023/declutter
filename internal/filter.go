@@ -26,8 +26,8 @@ func FilterByFileInfo(ss []os.DirEntry, test func(os.DirEntry) bool) (ret []os.D
 	return ret
 }
 
+// Function to filter strings with "." at the beginning. i.e hidden files
 func FilterHiddenFiles(f []os.DirEntry) []os.DirEntry {
-	// Function to filter strings with "." at the beginning. i.e hidden files
 	ss := func(fName string) bool { return !strings.HasPrefix(string(fName), ".") }
 
 	return FilterByName(f, ss)
