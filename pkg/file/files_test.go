@@ -1,9 +1,7 @@
-package internal_test
+package file
 
 import (
 	"testing"
-
-	"github.com/eddie023/declutter/internal"
 )
 
 func TestIsValidPath(t *testing.T) {
@@ -17,7 +15,7 @@ func TestIsValidPath(t *testing.T) {
 
 	for _, test := range testCases {
 
-		got := internal.IsValidPath(test.path)
+		got := IsValidPath(test.path)
 
 		if got != test.want {
 			t.Errorf("Got %v, wanted %v", got, test.want)

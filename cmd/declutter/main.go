@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/eddie023/declutter/pkg/config"
 	"github.com/eddie023/declutter/pkg/declutter"
-	log "github.com/sirupsen/logrus"
 )
 
 const USAGE = `Usage: declutter [options...] <filepath>
@@ -16,23 +16,23 @@ Options:
 	-r Show what would the output look like without moving files. (WIP)
 `
 
-const CURRENT_DIR = "."
+// TODO: config file should be created if not found
+// there should be no required for config file
+// try to add the declutter binary in cron
+// CLI should have good informative debug as we all info logs
 
 var (
 	// main operation mode
-	isDebugMode = flag.Bool("v", false, "show verbose logs")
-	// isReadOnlyMode = flag.Bool("r", false, "show output without moving files")
+	isDebugMode    = flag.Bool("v", false, "show verbose logs")
+	isReadOnlyMode = flag.Bool("r", false, "show output without moving files")
 )
 
 // TODO: Each file can be moved concurrently.
 
 func main() {
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, USAGE)
-
+		fmt.Fprint(os.Stderr, USAGE)
 	}
-
-	log.SetLevel(log.DebugLevel)
 
 	flag.Parse()
 	// If no filepath is provided.
@@ -45,18 +45,18 @@ func main() {
 	declutter.Tidy(path, getFlags())
 }
 
-func getFlags() declutter.Flags {
+func getFlags() config.Flags {
 	flags := make(map[string]bool)
 
 	flags["isDebugMode"] = *isDebugMode
-	// flags["isReadOnlyMode"] = *isReadOnlyMode
+	flags["isReadOnlyMode"] = *isReadOnlyMode
 
 	return flags
 }
 
 func usageAndExit(msg string) {
 	if msg != "" {
-		fmt.Fprintf(os.Stderr, msg)
+		fmt.Fprint(os.Stderr, msg)
 		fmt.Fprintf(os.Stderr, "\n\n")
 	}
 

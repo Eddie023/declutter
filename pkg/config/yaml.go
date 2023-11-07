@@ -1,10 +1,10 @@
-package internal
+package config
 
 import (
-	"io/ioutil"
+	"log"
+	"os"
 	"path/filepath"
 
-	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
 )
 
@@ -17,7 +17,7 @@ type Conf struct {
 func (c *Conf) GetConf() *Conf {
 	configFilePATH, _ := filepath.Abs("./config.yaml")
 
-	yamlFile, err := ioutil.ReadFile(configFilePATH)
+	yamlFile, err := os.ReadFile(configFilePATH)
 	if err != nil {
 		log.Fatalf("Error: YamlFile.Get arr #%v ", err)
 	}
