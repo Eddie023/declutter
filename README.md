@@ -4,8 +4,8 @@
  <img src="docs/resources/logo.png">
 </p>
 
-Declutter is a tool to organize your files in correct folder structure. 
-Remove all the clutter from your specified directory all this from your terminal!
+Declutter is a tool to organize your files in correct folder structure.
+Remove all the clutter from your specified directory from your terminal!
 
 Declutter looks into all the files(excluding hidden files) provided in a given directory. Then based on extension type moves those files into relevant folders.
 

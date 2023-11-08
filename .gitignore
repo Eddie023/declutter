@@ -18,3 +18,7 @@ vendor/
 
 # Ignore test files 
 testFiles/**
+dist/
+.vscode/** 
+
+.bin/**
