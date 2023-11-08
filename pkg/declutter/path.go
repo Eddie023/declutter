@@ -1,10 +1,9 @@
-package internal
+package declutter
 
 import (
+	"log"
 	"os"
 	"path/filepath"
-
-	log "github.com/sirupsen/logrus"
 )
 
 // Check if cmd arg is provided.
