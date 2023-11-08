@@ -139,7 +139,7 @@ func run(log *zap.SugaredLogger, args []string) error {
 
 					err = declutter.MoveFile(path, filename, mtype.String())
 					if err != nil {
-						log.Debugf("failed to move file %s, skipping", file.Name())
+						log.Debugf("failed to move file %s, skipping", filename)
 
 					}
 				}(file.Name(), mtype.String())
