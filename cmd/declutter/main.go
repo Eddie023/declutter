@@ -16,13 +16,6 @@ import (
 	"go.uber.org/zap"
 )
 
-const USAGE = `Usage: declutter [options...] <filepath>
-
-Options: 
-	-v Show verbose logs. (WIP)
-	-r Show what would the output look like without moving files. (WIP)
-`
-
 func main() {
 	showDebugLogs := false
 	for _, arg := range os.Args {

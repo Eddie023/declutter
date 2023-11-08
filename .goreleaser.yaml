@@ -1,24 +1,22 @@
-# This is an example .goreleaser.yml file with some sensible defaults.
-# Make sure to check the documentation at https://goreleaser.com
 before:
   hooks:
-    # You may remove this if you don't use go modules.
     - go mod tidy
 builds:
-  - main: ./cmd/declutter
+  - id: declutter
+    main: ./cmd/declutter
+    binary: declutter
+    ldflags:
+      - -s -w
+      - -X github.com/eddie023/declutter/internal/build.Version={{.Version}}
+      - -X github.com/eddie023/declutter/internal/build.Commit={{.Commit}}
+      - -X github.com/eddie023/declutter/internal/build.Date={{.Date}}
+      - -X github.com/eddie023/declutter/internal/build.BuiltBy=eddie023releaser
     env:
       - CGO_ENABLED=0
     goos:
       - linux
       - windows
       - darwin
-archives:
-  - replacements:
-      darwin: Darwin
-      linux: Linux
-      windows: Windows
-      386: i386
-      amd64: x86_64
 checksum:
   name_template: "checksums.txt"
 snapshot:
@@ -29,6 +27,3 @@ changelog:
     exclude:
       - "^docs:"
       - "^test:"
-# modelines, feel free to remove those if you don't want/use them:
-# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
-# vim: set ts=2 sw=2 tw=0 fo=cnqoj

@@ -16,5 +16,6 @@ Usage: declutter [options...] -p <filepath>
 
 Options: 
         --verbose Show verbose logs.
-        --show Show what would the output look like without moving files.
+        --path path to the directory where you would like to run this. By Default, will prompt you to confirm current directory location.
+        --show Show the result of running this action without moving files.
 ```
