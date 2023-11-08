@@ -1,6 +1,8 @@
 # declutter
 
-![logo](docs/resources/logo.png)
+<p align="center">
+ <img src="docs/resources/logo.png">
+</p>
 
 Declutter is a tool to organize your files in correct folder structure. 
 Remove all the clutter from your specified directory all this from your terminal!
@@ -10,22 +12,9 @@ Declutter looks into all the files(excluding hidden files) provided in a given d
 ## Usage:
 
 ```
-Usage: declutter [options...] <filepath>
+Usage: declutter [options...] -p <filepath>
 
 Options: 
-        -v Show verbose logs. (WIP)
-        -r Show what would the output look like without moving files. (WIP)
-```
-
-## Build:
-
-```bash
-$ make build
-```
-
-Run the declutter executable and pass the dir path you want to organize.
-
-
-```bash
-$ ./declutter ~/Desktop
+        --verbose Show verbose logs.
+        --show Show what would the output look like without moving files.
 ```
