@@ -1,0 +1,40 @@
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build: 
+    runs-on: macos-latest
+
+    permissions: 
+      contents: write
+    
+    steps: 
+      - name: Print params
+        run: echo "Releasing Declutter CLI ${{ github.event.inputs.tag }}"
+
+      - name: Check tag version format
+        uses: nowsprinting/check-version-format-action@v3.2.8
+        with: 
+          prefix: "v"
+
+      - name: Checkout 
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          distribution: goreleaser
+          version: latest
+          args: release --clean
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v5
+        with: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
