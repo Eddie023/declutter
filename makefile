@@ -10,4 +10,4 @@ reset-testFiles:
 reset-run: reset-testFiles run 
 
 build:
-	go build -o bin/declutter cmd/declutter/main.go 
+	goreleaser build --single-target
