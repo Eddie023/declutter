@@ -1,4 +1,6 @@
-package file
+// Command declutter is a utility that organizes provided
+// directory by moving files to relevant folder.
+package declutter
 
 import (
 	"fmt"
@@ -65,7 +67,7 @@ func ReadFiles(path string) []os.DirEntry {
 }
 
 // Move file based on provided path, file type, and file name.
-func MoveFile(path string, fileName string, mimeType string) {
+func MoveFile(path string, fileName string, mimeType string) error {
 	outputFolderName := GetFolderName(mimeType)
 
 	// check if we already have folder with this name in given path.
@@ -83,7 +85,7 @@ func MoveFile(path string, fileName string, mimeType string) {
 	previousPath := path + "/" + fileName
 	newPath := path + "/" + outputFolderName + "/" + fileName
 
-	Move(previousPath, newPath)
+	return Move(previousPath, newPath)
 }
 
 func IsValidPath(fp string) bool {

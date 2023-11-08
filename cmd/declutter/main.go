@@ -1,12 +1,19 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
+	"strings"
+	"sync"
 
-	"github.com/eddie023/declutter/pkg/config"
+	"github.com/eddie023/declutter/internal/build"
 	"github.com/eddie023/declutter/pkg/declutter"
+	"github.com/eddie023/declutter/pkg/logger"
+	"github.com/eddie023/declutter/pkg/tree"
+	"github.com/gabriel-vasile/mimetype"
+	"github.com/manifoldco/promptui"
+	"github.com/urfave/cli/v2"
+	"go.uber.org/zap"
 )
 
 const USAGE = `Usage: declutter [options...] <filepath>
@@ -16,51 +23,135 @@ Options:
 	-r Show what would the output look like without moving files. (WIP)
 `
 
-// TODO: config file should be created if not found
-// there should be no required for config file
-// try to add the declutter binary in cron
-// CLI should have good informative debug as we all info logs
-
-var (
-	// main operation mode
-	isDebugMode    = flag.Bool("v", false, "show verbose logs")
-	isReadOnlyMode = flag.Bool("r", false, "show output without moving files")
-)
-
-// TODO: Each file can be moved concurrently.
-
 func main() {
-	flag.Usage = func() {
-		fmt.Fprint(os.Stderr, USAGE)
+	showDebugLogs := false
+	for _, arg := range os.Args {
+		if strings.Contains(arg, "verbose") {
+			showDebugLogs = true
+		}
 	}
 
-	flag.Parse()
-	// If no filepath is provided.
-	if flag.NArg() < 1 {
-		usageAndExit("")
+	var log *zap.SugaredLogger
+	if showDebugLogs {
+		log = logger.New(logger.WithLogLevel(zap.DebugLevel))
+	} else {
+		log = logger.New()
 	}
 
-	path := flag.Args()[0]
-
-	declutter.Tidy(path, getFlags())
+	err := run(log, os.Args)
+	if err != nil {
+		log.Error(err)
+		os.Exit(1)
+	}
 }
 
-func getFlags() config.Flags {
-	flags := make(map[string]bool)
+func run(log *zap.SugaredLogger, args []string) error {
+	app := cli.App{
+		Name: "declutter",
+		Flags: []cli.Flag{
+			&cli.BoolFlag{
+				Name:  "verbose",
+				Usage: "show all debug logs",
+			},
+			&cli.BoolFlag{
+				Name:  "readonly",
+				Usage: "show the output of the action without moving files",
+			},
+			&cli.StringFlag{
+				Name:    "path",
+				Aliases: []string{"p"},
+				Usage:   "provide the directory location of the folder you want to tidy up.",
+			},
+			&cli.BoolFlag{
+				Name:    "show",
+				Aliases: []string{"s"},
+				Usage:   "will show how to output of will look without moving the files",
+			},
+		},
+		Description: "automatically move files to correct folder based on filetype",
+		UsageText:   "declutter [options...] <filepath>",
+		Version:     build.Version,
+		Action: func(c *cli.Context) error {
+			path := c.String("path")
 
-	flags["isDebugMode"] = *isDebugMode
-	flags["isReadOnlyMode"] = *isReadOnlyMode
+			if c.String("path") == "" {
+				prompt := promptui.Prompt{
+					IsConfirm:   true,
+					HideEntered: true,
+					Label:       "The location to tidy up is not provided. Do you wanna use the current directory",
+				}
 
-	return flags
-}
+				_, err := prompt.Run()
+				if err != nil {
+					fmt.Println("Exiting")
+					return nil
+				}
 
-func usageAndExit(msg string) {
-	if msg != "" {
-		fmt.Fprint(os.Stderr, msg)
-		fmt.Fprintf(os.Stderr, "\n\n")
+				path = "."
+			}
+
+			if ok := declutter.IsValidPath(path); !ok {
+				log.Errorf("the provided path '%s' does not exist", path)
+				return nil
+			}
+
+			// filter hidden files, sub-directories.
+			files := declutter.ReadFiles(path)
+
+			if len(files) == 0 {
+				log.Warnln("No files to move. Use a different location.")
+
+				return nil
+			}
+
+			if c.Bool("show") {
+				tree := tree.New()
+
+				for _, file := range files {
+					mtype, err := mimetype.DetectFile(path + "/" + file.Name())
+					if err != nil {
+						log.Warnf("Skipping file : %v . Cant figure out the mime type with error: %v", file.Name(), err)
+
+						continue
+					}
+
+					tree.Add(file.Name(), declutter.GetFolderName(mtype.String()))
+				}
+
+				tree.Display()
+
+				return nil
+			}
+
+			var wg sync.WaitGroup
+			for _, file := range files {
+				mtype, err := mimetype.DetectFile(path + "/" + file.Name())
+				if err != nil {
+					log.Warnf("Skipping file : %v . Cant figure out the mime type with error: %v", file.Name(), err)
+
+					continue
+				}
+
+				wg.Add(1)
+
+				go func(filename, mimeType string) {
+					defer wg.Done()
+
+					err = declutter.MoveFile(path, filename, mtype.String())
+					if err != nil {
+						log.Debugf("failed to move file %s, skipping", file.Name())
+
+					}
+				}(file.Name(), mtype.String())
+
+			}
+
+			wg.Wait()
+			log.Infof("Successfully moved")
+
+			return nil
+		},
 	}
 
-	flag.Usage()
-	fmt.Fprintf(os.Stderr, "\n")
-	os.Exit(1)
+	return app.Run(args)
 }
