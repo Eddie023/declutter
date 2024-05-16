@@ -1,7 +1,7 @@
 # declutter
 
 <p align="center">
- <img src="docs/resources/logo.png" width="500" height="500">
+ <img src="docs/resources/logo.png">
 </p>
 
 Declutter is a tool to organize your files in correct folder structure.
