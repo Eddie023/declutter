@@ -1,8 +1,7 @@
-# declutter
-
 <p align="center">
  <img src="docs/resources/logo.svg">
 </p>
+<h1 align="center">Declutter</h1>
 
 Declutter is a tool to organize your files in correct folder structure.
 Remove all the clutter from your specified directory from your terminal!
