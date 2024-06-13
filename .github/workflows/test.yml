@@ -1,0 +1,20 @@
+name: CI 
+on: [push]
+
+jobs: 
+    build:
+        name: Test 
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v1
+            
+            - name: Run linter 
+              run: make lint 
+            
+            - name: Run unit tests
+              run: make test 
+            
+            - name: Build 
+              run: make build 
