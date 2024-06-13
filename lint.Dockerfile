@@ -8,6 +8,6 @@ ENV GOFLAGS=-buildvcs=false
 
 WORKDIR /src
 
-COPY . . 
+# COPY . . 
 
-# ENTRYPOINT [ "golangci-lint", "run" ]
+ENTRYPOINT [ "golangci-lint", "run" ]
