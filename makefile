@@ -13,7 +13,7 @@ test:
 lint: 
 	docker run \
 	--rm --interactive --tty \
-	$$(docker build --quiet --file lint.Dockerfile . ) > /dev/null 2>&1 \
+	$$(docker build --quiet --file lint.Dockerfile . )  \
 	&& golangci-lint run 
 
 release:
