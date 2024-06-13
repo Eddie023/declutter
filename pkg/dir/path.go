@@ -1,7 +1,6 @@
-package declutter
+package dir
 
 import (
-	"log"
 	"os"
 	"path/filepath"
 )
@@ -22,7 +21,7 @@ func GetDirPath(cmd string) (path string) {
 func getAbsPath() string {
 	ex, err := os.Executable()
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 	path := filepath.Dir(ex)
 

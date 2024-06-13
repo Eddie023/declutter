@@ -1,6 +1,4 @@
-// Command declutter is a utility that organizes provided
-// directory by moving files to relevant folder.
-package declutter
+package dir
 
 import (
 	"fmt"
@@ -48,7 +46,7 @@ func ReadFiles(path string) []os.DirEntry {
 	var files []os.DirEntry
 	dir, err := os.ReadDir(path)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	if len(dir) == 0 {
@@ -78,7 +76,7 @@ func MoveFile(path string, fileName string, mimeType string) error {
 		// FIX ME: os.Mkdir is case insensitive. However, we should know the actual case of key dir.
 		err := os.Mkdir(filepath.Join(path, outputFolderName), 0755)
 		if err != nil {
-			log.Fatal("Error when creating new folder\n", err)
+			return fmt.Errorf("error when creating new folder: %w", err)
 		}
 	}
 
