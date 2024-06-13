@@ -14,8 +14,7 @@ lint:
 	docker run --rm \
 	--volume $$(pwd):/src \
 	--volume ~/.cache:/root./.cache \
-	$$(docker build --quiet --file lint.Dockerfile .) \
-	golangci-lint run 
+	$$(docker build --quiet --file lint.Dockerfile .) 
 
 release:
 	rm -rf dist/ && goreleaser build --single-target --skip-validate 
