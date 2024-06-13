@@ -11,10 +11,11 @@ test:
 	$$(docker build --quiet --file test.Dockerfile . ) 
 
 lint: 
-	docker run -t \
-	--rm \
-	$$(docker build --quiet --file lint.Dockerfile . )  \
-	&& golangci-lint run 
+	docker run --rm \
+	--volume $$(pwd):/src \
+	--volume ~/.cache:/root./.cache \
+	$$(docker build --quiet --file lint.Dockerfile .) \
+	golangci-lint run 
 
 release:
 	rm -rf dist/ && goreleaser build --single-target --skip-validate 

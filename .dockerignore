@@ -1,0 +1,7 @@
+**/dist/**
+
+.git
+.vscode
+.github
+docs 
+testFiles/**

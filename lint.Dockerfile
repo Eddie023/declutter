@@ -4,4 +4,10 @@ RUN apt-get update \
     && apt-get install -y -q --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
-ENV GOFLAGS=buildvcs=false 
+ENV GOFLAGS=-buildvcs=false 
+
+WORKDIR /src
+
+COPY . . 
+
+# ENTRYPOINT [ "golangci-lint", "run" ]
