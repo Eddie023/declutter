@@ -19,7 +19,6 @@ var ErrPathUndefined = errors.New("path must be provided")
 // 1. `verbose` flag should show debug logs
 // 2. `declutter path` must be provided
 // 3. `known error must be shown properly
-// 4. Add linter
 
 func main() {
 	app := cli.App{
