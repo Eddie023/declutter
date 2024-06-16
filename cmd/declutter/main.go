@@ -96,7 +96,7 @@ func run(c *cli.Context) error {
 
 	err = eg.Wait()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	fmt.Println("Successfully moved")
