@@ -6,6 +6,7 @@ require (
 	github.com/gabriel-vasile/mimetype v1.4.0
 	github.com/urfave/cli/v2 v2.25.7
 	github.com/xlab/treeprint v1.2.0
+	golang.org/x/sync v0.7.0
 )
 
 require (
